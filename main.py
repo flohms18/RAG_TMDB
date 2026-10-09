@@ -4,6 +4,7 @@ import requests
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 load_dotenv()
 
@@ -26,7 +27,9 @@ response = requests.get(url, headers=headers)
 DF_TMDB = pd.DataFrame(response.json()["results"])
 
 
-print(DF_TMDB['overview'])
+embeddings = model.encode(DF_TMDB['overview'].to_list())
+
+print(embeddings.shape)
 
 
 
