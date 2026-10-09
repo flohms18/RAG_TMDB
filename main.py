@@ -31,5 +31,11 @@ embeddings = model.encode(DF_TMDB['overview'].to_list())
 
 print(embeddings.shape)
 
+query_emb = model.encode(["A film about Odysseus"])
+
+similarities = model.similarity(query_emb, embeddings)
+
+print(similarities)
+
 
 
