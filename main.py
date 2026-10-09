@@ -3,9 +3,9 @@ from dotenv import load_dotenv
 import requests
 import pandas as pd
 from sentence_transformers import SentenceTransformer
+import torch
 
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-
 load_dotenv()
 
 API_KEY = os.getenv('API_KEY')
@@ -23,19 +23,16 @@ response = requests.get(url, headers=headers)
 
 
 
-
 DF_TMDB = pd.DataFrame(response.json()["results"])
 
+embeddings = model.encode(DF_TMDB['overview'].tolist())
+query_emb = model.encode('A film about Odysseus')
 
-embeddings = model.encode(DF_TMDB['overview'].to_list())
+smile = model.similarity(query_emb, embeddings)
 
-print(embeddings.shape)
+best = torch.topk(smile, k=1)
 
-query_emb = model.encode(["A film about Odysseus"])
+answer = best[1][0].tolist()
 
-similarities = model.similarity(query_emb, embeddings)
-
-print(similarities)
-
-
+print(DF_TMDB.iloc[answer].title)
 
