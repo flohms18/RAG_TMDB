@@ -5,6 +5,8 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer
 import torch
 
+
+
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 load_dotenv()
 
