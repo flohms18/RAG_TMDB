@@ -4,9 +4,6 @@ from pydantic import BaseModel
 import requests
 import ollama
 from ollama import chat
-
-
-
 import os
 from dotenv import load_dotenv
 import requests
