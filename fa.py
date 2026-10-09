@@ -15,16 +15,13 @@ class TextArea (BaseModel):
 
 @app.get('/')
 async def serve_home(request: Request):
-    return templates.TemplateResponse('home.html', {
-        "request" : request
-    })
+    return templates.TemplateResponse(request, 'home.html')
 
 @app.get('/API_call')
 async def first(request: Request):
     everything = requests.get(url, headers=headers).json()
-    return templates.TemplateResponse('home.html', {
-            "request" : request,
-            everything : "everything"
+    return templates.TemplateResponse(request, 'home.html', {
+            "everything" : everything
         })
     
 
