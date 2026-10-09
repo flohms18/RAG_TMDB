@@ -42,6 +42,7 @@ context = DF_TMDB.iloc[answer][['title', 'overview', 'release_date', 'vote_avera
 LLM = f"""
 Pick the 3 movies that match the most with the user request.
 Use only the movies listed below and explain briefly why each one matches.
+Give me the score of similary for each after the title
 
 Movies:
 {context.to_string()}

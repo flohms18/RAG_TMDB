@@ -54,6 +54,10 @@ async def first(request: Request):
 
 @app.post('/post_tmdb')
 async def submit_form(request : Request, text_request : str = Form(...)):
+
+    movie_stat = []
+
+
     everything = requests.get(url,headers=headers).json()
     DF_TMDB = pd.DataFrame(everything['results'])
     emb = model.encode(DF_TMDB['overview'].tolist())
@@ -67,17 +71,31 @@ async def submit_form(request : Request, text_request : str = Form(...)):
 
     jackpot = DF_TMDB.iloc[winner[0]].title
 
+
     context = DF_TMDB.iloc[winner][['title', 'overview', 'release_date', 'vote_average']]
+
+    scores = best[0][0].tolist()
+
+    for row, score in zip(context.itertuples(), scores):
+        movie_stat.append({
+            "title" : row.title,
+            "release_date" : row.release_date,
+            "score" : round(score, 3)
+        })
+
 
     LLM = f"""
             Pick the 3 movies that match the most with the user request.
             Use only the movies listed below and explain briefly why each one matches.
-
+            Give me the score of similary for each after the title
             Movies:
             {context.to_string()}
 
             User request:
             {text_request}
+
+            Similarity Scores:
+            {scores}
             """
 
     stream = chat(
@@ -87,6 +105,7 @@ async def submit_form(request : Request, text_request : str = Form(...)):
 
     return templates.TemplateResponse(request, 'home.html', {
         "text_request" : text_request,
+        "movie_stat" : movie_stat,
         "jackpot" : stream['message']['content']
     }
     )

@@ -16,5 +16,14 @@
 
     {{ jackpot }}
     
+    <ul>
+        {% for item in movie_stat %}
+            <li>{{ item.title }}</li>
+            <li>{{ item.release_date }}</li>
+            <li>{{ item.score }}</li>
+            {% endfor %}
+    </ul>
+    
+    
 </body>
 </html>
