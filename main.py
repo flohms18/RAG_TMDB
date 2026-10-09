@@ -1,11 +1,13 @@
 import os
 from dotenv import load_dotenv
 import requests
+import pandas as pd
 
 
 load_dotenv()
 
 API_KEY = os.getenv('API_KEY')
+
 
 url = 'https://api.themoviedb.org/3/movie/popular'
 
@@ -16,4 +18,14 @@ headers = {
 }
 
 response = requests.get(url, headers=headers)
-print(response.text)
+
+
+
+
+MyTMDB = pd.read_json(response.text)
+
+
+print(MyTMDB)
+
+
+
