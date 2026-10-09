@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import requests
 import pandas as pd
+from sentence_transformers import SentenceTransformer
 
 
 load_dotenv()
@@ -22,10 +23,10 @@ response = requests.get(url, headers=headers)
 
 
 
-MyTMDB = pd.read_json(response.text)
+DF_TMDB = pd.DataFrame(response.json()["results"])
 
 
-print(MyTMDB)
+print(DF_TMDB['overview'])
 
 
 
