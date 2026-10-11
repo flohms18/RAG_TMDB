@@ -2,14 +2,18 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import requests
-import ollama
 from ollama import chat
 import os
 from dotenv import load_dotenv
-import requests
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 import torch
+from fastapi.staticfiles import StaticFiles
+
+app = FastAPI()
+
+app.mount("/static", StaticFiles(directory = "static"), name = "static")
+
 
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 load_dotenv()
@@ -33,7 +37,7 @@ API_KEY = os.getenv('API_KEY')
 
 templates = Jinja2Templates(directory="templates")
 
-app = FastAPI()
+
 
 class TextArea (BaseModel):
     content : str
