@@ -12,8 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory = "static"), name = "static")
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 load_dotenv()
