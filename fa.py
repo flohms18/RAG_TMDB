@@ -12,6 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
@@ -72,7 +73,7 @@ async def submit_form(request : Request, text_request : str = Form(...)):
     jackpot = DF_TMDB.iloc[winner[0]].title
 
 
-    context = DF_TMDB.iloc[winner][['title', 'overview', 'release_date', 'vote_average']]
+    context = DF_TMDB.iloc[winner][['title', 'overview', 'release_date', 'vote_average']['poster_path']]
 
     scores = best[0][0].tolist()
 
