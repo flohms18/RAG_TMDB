@@ -46,34 +46,42 @@ class TextArea (BaseModel):
 
 @app.get('/')
 async def first(request: Request):
-    
     return templates.TemplateResponse(request, 'home.html', {
-        
-            
-        })
-    
 
+
+        })
+
+
+# ============================================================
+# RAG PIPELINE
+#   1. LOAD       -> fetch the documents (movies) from TMDB
+#   2. EMBED      -> convert every overview into a vector
+#   3. RETRIEVE   -> embed the user user_query, find the 5 closest movies
+#   4. AUGMENT    -> inject those 5 movies into the LLM prompt
+#   5. GENERATE   -> the LLM answers using ONLY that context
+# ============================================================
 @app.post('/post_tmdb')
 async def submit_form(request : Request, text_request : str = Form(...)):
 
     movie_stat = []
 
+    # ---------- STEP 1 : LOAD ----------
+    TMDB_DATA = requests.get(url,headers=headers).json()
 
-    everything = requests.get(url,headers=headers).json()
-    DF_TMDB = pd.DataFrame(everything['results'])
-    emb = model.encode(DF_TMDB['overview'].tolist())
+    DF_TMDB = pd.DataFrame(TMDB_DATA['results'])
 
-    query = model.encode(text_request)
+    # ---------- STEP 2 : EMBED ----------
+    emb_tmdb = model.encode(DF_TMDB['overview'].tolist())
 
-    compare = model.similarity(query, emb)
+    # ---------- STEP 3 : RETRIEVE ----------
+    user_query = model.encode(text_request)
+
+    compare = model.similarity(user_query, emb_tmdb)
+
     best = torch.topk(compare, k=5)
 
-    winner = best[1][0].tolist()
-
-    jackpot = DF_TMDB.iloc[winner[0]].title
-
-
-    context = DF_TMDB.iloc[winner][['title', 'overview', 'release_date', 'vote_average', 'poster_path']]
+    TOP_5 = best[1][0].tolist()
+    context = DF_TMDB.iloc[TOP_5][['title', 'overview', 'release_date', 'vote_average', 'poster_path']]
 
     scores = best[0][0].tolist()
 
@@ -81,11 +89,11 @@ async def submit_form(request : Request, text_request : str = Form(...)):
         movie_stat.append({
             "title" : row.title,
             "release_date" : row.release_date,
-            "score" : round(score, 3),
+            "score" : round(score, 2),
             "poster" : row.poster_path
         })
 
-
+    # ---------- STEP 4 : AUGMENT ----------
     LLM = f"""
             Pick the 3 movies that match the most with the user request.
             Use only the movies listed below and explain briefly why each one matches.
@@ -100,6 +108,7 @@ async def submit_form(request : Request, text_request : str = Form(...)):
             {scores}
             """
 
+    # ---------- STEP 5 : GENERATE ----------
     stream = chat(
     model='llama3.2:latest',
     messages=[{'role': 'user', 'content': LLM}]
@@ -111,5 +120,5 @@ async def submit_form(request : Request, text_request : str = Form(...)):
         "jackpot" : stream['message']['content']
     }
     )
-                      
+
 

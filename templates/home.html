@@ -5,33 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FastAPI - RAG - TMDB</title>
     <link href="{{url_for('static',path='/css/style.css')}}" rel="stylesheet" />
-    
 </head>
 <body>
 
-    <div class="RAG_TITLE mt-5">
-        <h1 class="text-center h1_rag_title">
-            RAG App with TMDB
-        </h1>
-    </div>
+    <main class="container">
 
-    <form action='/post_tmdb' method='POST' class="input_rag">
-  <label for="fname">Which movie are you looking for ? </label><br>
-  <input type="text" id="fname" name="text_request"><br>
-  <input type="submit" value="Submit"><br>
-  </form>
+        <header class="hero">
+            <h1 class="hero_title">RAG App with <span class="accent">TMDB</span></h1>
+            <p class="hero_subtitle">Describe the movie you're in the mood for, we'll find the best matches.</p>
+        </header>
 
-    {{ jackpot }}
-    
-    <ul>
-        {% for item in movie_stat %}
-            <li><img src="https://image.tmdb.org/t/p/w92{{ item.poster }}" alt="{{ item.title }} poster"></li>
-            <li>{{ item.title }}</li>
-            <li>{{ item.release_date }}</li>
-            <li>{{ item.score }}</li>
-            {% endfor %}
-    </ul>
-    
-    
+        <form action='/post_tmdb' method='POST' class="search">
+            <label for="fname" class="sr-only">Which movie are you looking for?</label>
+            <input type="text" id="fname" name="text_request"
+                   placeholder="e.g. a space adventure with a lonely robot"
+                   value="{{ text_request or '' }}" required>
+            <button type="submit">Search</button>
+        </form>
+
+        {% if jackpot %}
+        <section class="answer">
+            <h2 class="section_title">Llama's pick</h2>
+            <p class="answer_text">{{ jackpot }}</p>
+        </section>
+        {% endif %}
+
+        {% if movie_stat %}
+        <section>
+            <h2 class="section_title text-center">Top matches</h2>
+            <ul class="grid">
+                {% for item in movie_stat %}
+                <li class="card">
+                    <img class="card_poster" src="https://image.tmdb.org/t/p/w342{{ item.poster }}" alt="{{ item.title }} poster">
+                    <div class="card_body">
+                        <h3 class="card_title">{{ item.title }}</h3>
+                        <div class="card_meta">
+                            <span>{{ item.release_date[:4] }}</span>
+                            <span class="score">{{ item.score }}</span>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+    </main>
+
+
+<script type="text/javascript">
+    function score() {
+        const badges = document.getElementsByClassName('score')
+
+        for (const badge of badges) {
+            const value = parseFloat(badge.textContent)
+
+            if (value >= 0.60) {
+                badge.style.backgroundColor = '#00e054'
+            }
+            else if (value >= 0.50) {
+                badge.style.backgroundColor = '#ff8000'
+            }
+            else {
+                badge.style.backgroundColor = '#FFFFFF'
+            }
+        }
+    }
+
+    score()
+</script>
 </body>
 </html>
