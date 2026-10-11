@@ -81,7 +81,8 @@ async def submit_form(request : Request, text_request : str = Form(...)):
         movie_stat.append({
             "title" : row.title,
             "release_date" : row.release_date,
-            "score" : round(score, 3)
+            "score" : round(score, 3),
+            "poster" : row.poster_path
         })
 
 
