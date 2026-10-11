@@ -73,7 +73,7 @@ async def submit_form(request : Request, text_request : str = Form(...)):
     jackpot = DF_TMDB.iloc[winner[0]].title
 
 
-    context = DF_TMDB.iloc[winner][['title', 'overview', 'release_date', 'vote_average']['poster_path']]
+    context = DF_TMDB.iloc[winner][['title', 'overview', 'release_date', 'vote_average', 'poster_path']]
 
     scores = best[0][0].tolist()
 

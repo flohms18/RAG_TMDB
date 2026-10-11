@@ -1,4 +1,12 @@
+@font-face {
+    font-family: "Font-Jetbrains";
+    src: url(../fonts/JetBrainsMono-Regular.ttf);
+}
+
+
 body {
     background-color: red;
+    font-family: "Font-Jetbrains";
 }
+
 
