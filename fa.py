@@ -98,6 +98,7 @@ async def submit_form(request : Request, text_request : str = Form(...)):
             Pick the 3 movies that match the most with the user request.
             Use only the movies listed below and explain briefly why each one matches.
             Give me the score of similary for each after the title
+            Don't write bold text (** or *) and show the score with 2 decimals
             Movies:
             {context.to_string()}
 
