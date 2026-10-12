@@ -85,6 +85,10 @@ async def submit_form(request : Request, text_request : str = Form(...)):
 
     scores = best[0][0].tolist()
 
+    for x in scores:
+        round(x,2)
+
+
     for row, score in zip(context.itertuples(), scores):
         movie_stat.append({
             "title" : row.title,
