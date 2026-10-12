@@ -111,7 +111,7 @@ async def submit_form(request : Request, text_request : str = Form(...)):
 
     # ---------- STEP 5 : GENERATE ----------
     stream = chat(
-    model='llama3.2:latest',
+    model='gemma4:latest',
     messages=[{'role': 'user', 'content': LLM}]
 )
 
