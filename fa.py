@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
 import requests
 from ollama import chat
 import os
@@ -36,12 +35,6 @@ load_dotenv()
 API_KEY = os.getenv('API_KEY')
 
 templates = Jinja2Templates(directory="templates")
-
-
-
-class TextArea (BaseModel):
-    content : str
-
 
 
 @app.get('/')
