@@ -1,0 +1,10 @@
+fastapi[standard]==0.143.0
+uvicorn==0.54.0
+python-multipart==0.0.32
+Jinja2==3.1.6
+requests==2.34.2
+python-dotenv==1.2.4
+pandas==3.0.6
+torch==2.14.1
+sentence-transformers==6.1.0
+ollama==0.6.3
