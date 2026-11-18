@@ -28,13 +28,20 @@ headers = {
     "Authorization" : f"Bearer {API_KEY}"
 }
 
-response = requests.get(url, headers=headers)
-
-load_dotenv()
-
-API_KEY = os.getenv('API_KEY')
-
 templates = Jinja2Templates(directory="templates")
+
+
+# ---------- STEP 1 : LOAD ----------
+movies = []
+for page in range(1, 6):
+    movies += requests.get(url, headers=headers, params={"page": page}).json()['results']
+
+DF_TMDB = pd.DataFrame(movies).drop_duplicates('id')
+DF_TMDB = DF_TMDB[DF_TMDB['overview'] != ''].reset_index(drop=True)
+DF_TMDB['title_overview'] = DF_TMDB['title'] + ". " + DF_TMDB['overview']
+
+# ---------- STEP 2 : EMBED  ----------
+emb_tmdb = model.encode(DF_TMDB['title_overview'].tolist())
 
 
 @app.get('/')
@@ -54,17 +61,9 @@ async def first(request: Request):
 #   5. GENERATE   -> the LLM answers using ONLY that context
 # ============================================================
 @app.post('/post_tmdb')
-async def submit_form(request : Request, text_request : str = Form(...)):
+def submit_form(request : Request, text_request : str = Form(...)):
 
     movie_stat = []
-
-    # ---------- STEP 1 : LOAD ----------
-    TMDB_DATA = requests.get(url,headers=headers).json()
-
-    DF_TMDB = pd.DataFrame(TMDB_DATA['results'])
-
-    # ---------- STEP 2 : EMBED ----------
-    emb_tmdb = model.encode(DF_TMDB['overview'].tolist())
 
     # ---------- STEP 3 : RETRIEVE ----------
     user_query = model.encode(text_request)
@@ -76,17 +75,13 @@ async def submit_form(request : Request, text_request : str = Form(...)):
     TOP_5 = best[1][0].tolist()
     context = DF_TMDB.iloc[TOP_5][['title', 'overview', 'release_date', 'vote_average', 'poster_path']]
 
-    scores = best[0][0].tolist()
-
-    for x in scores:
-        round(x,2)
-
+    scores = [round(s, 2) for s in best[0][0].tolist()]
 
     for row, score in zip(context.itertuples(), scores):
         movie_stat.append({
             "title" : row.title,
             "release_date" : row.release_date,
-            "score" : round(score, 2),
+            "score" : score,
             "poster" : row.poster_path
         })
 
